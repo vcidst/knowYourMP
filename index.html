@@ -9,10 +9,10 @@
   <script src = "http://d3js.org/topojson.v1.min.js"></script>
   <script>
 
-  var w = 960;
-  var h = 1160;
+  var w = 800;
+  var h = 800;
 
-  var projection = d3.geo.albersUsa()
+  var projection = d3.geo.mercator()
   .translate([w/2, h/2])
   .scale(500);
 
@@ -24,7 +24,7 @@
               .attr("height", h)
               .attr("fill", "blue");
 
-  d3.json("maps/us-states.json", function(json) {
+  d3.json("maps/india_simplified.json", function(json) {
     svg.selectAll("path")
         .data(json.features)
         .enter().append("path")
