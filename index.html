@@ -2,35 +2,181 @@
 <meta charset = "utf=8">
 <head>
   <style>
+
+      body {
+        font-family: Arial, sans-serif;
+      }
+
+      .pc {
+        fill: #bdbdbd;
+        stroke: #fff;
+        stroke-width: 0.5px;
+      }
+
+      .state {
+        fill: none;
+        stroke: #636363;
+        stroke-width: 1px;
+        stroke-linejoin: round;
+      }
+
+      #container {
+        margin:2%;
+        padding:20px;
+        border:2px solid #d0d0d0;
+        border-radius: 5px;
+      }
+
+      div.tooltip {
+        position: absolute;
+        text-align: center;
+        padding: 0.5em;
+        font-size: 10px;
+        color: #222;
+        background: #FFF;
+        border-radius: 2px;
+        pointer-events: none;
+        box-shadow: 0px 0px 2px 0px #a6a6a6;
+        text-shadow:#f5f5f5 0 1px 0;
+      }
+
+      .legend .legend-title {
+        text-align: left;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 90%;
+      }
+      .legend .legend-scale ul {
+        margin: 0;
+        margin-bottom: 5px;
+        padding: 0;
+        float: left;
+        list-style: none;
+      }
+      .legend .legend-scale ul li {
+        font-size: 80%;
+        list-style: none;
+        margin-left: 0;
+        line-height: 18px;
+        margin-bottom: 2px;
+        }
+      .legend ul.legend-labels li span {
+        display: block;
+        float: left;
+        height: 20px;
+        width: 20px;
+        margin-right: 5px;
+        margin-left: 0;
+      }
+      .legend .legend-source {
+        font-size: 70%;
+        color: #999;
+        clear: both;
+      }
+
   </style>
 </head>
 <body>
-  <script src = "d3/d3.js"></script>
-  <script src = "http://d3js.org/topojson.v1.min.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://d3js.org/topojson.v1.js"></script>
+  <script src="http://d3js.org/queue.v1.min.js"></script>
+  <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
   <script>
 
-  var w = 800;
-  var h = 800;
+  d3.select(window).on("resize", sizeChange);
 
-  var projection = d3.geo.mercator()
-  .translate([w/2, h/2])
-  .scale(500);
+        //Set d3 scale
+        var color_domain = ['GEN','SC','ST'];
+        var legend_labels = ['GEN','SC','ST'];
+        var color = d3.scale.threshold()
+          .domain(color_domain)
+          .range(["", "#b2df8a", "#1f78b4","#a6cee3"]);
 
-  var path = d3.geo.path()
-  .projection(projection);
+        //Set tooltip
+        var div = d3.select("body").append("div")
+         .attr("class", "tooltip")
+         .style("opacity", 0);
 
-  var svg = d3.select("body").append("svg")
-              .attr("width", w)
-              .attr("height", h)
-              .attr("fill", "blue");
+        //Set d3 projection, path and svg
+        var projection = d3.geo.mercator()
+            .center([78, 27])
+            .scale(1200);
 
-  d3.json("maps/india.json", function(error, india) {
-    if (error) return console.error(error);
+        var path = d3.geo.path()
+            .projection(projection);
 
-    svg.append("path")
-        .datum(topojson.features(india))
-        .attr("d", path);
-  });
+        var svg = d3.select("#container")
+          .append("svg")
+          .attr("width", "100%")
+          .attr("height","100%")
+          .append("g");
+
+        //Wait for data files to download before drawing
+        queue()
+          .defer(d3.json, "maps/india.json")
+          .defer(d3.csv, "data/education2014.csv") //sample data
+          .await(ready);
+
+        function ready(error, pc, data) {
+
+          //Set up for visualizing sample data
+          var pairResultWithId = {};
+          var pairNameWithId = {};
+          data.forEach(function(d) {
+            pairResultWithId[d.ST_CODE + d.PC_CODE] = d.Education;
+            pairNameWithId[d.ST_CODE + d.PC_CODE] = d.Constituency;
+          });
+
+          //Drawing pc boundaries
+          var pc_geojson = topojson.feature(pc, pc.objects.india_pc_2014);
+          svg.selectAll(".pc")
+              .data(pc_geojson.features)
+              .enter().append("path")
+              .attr("class", "pc")
+              .attr("d", path)
+              .style ( "fill" , function (d) {
+                var result = pairResultWithId[d.properties.ST_CODE + d.properties.PC_CODE];
+                if (result!='') {return color(result);}
+
+              })
+              .style("opacity", 0.8)
+              .on("mouseover", function(d) {
+                 d3.select(this).transition().duration(300).style("opacity", 1);
+                 div.transition().duration(300)
+                 .style("opacity", 1)
+                 div.text(pairNameWithId[d.properties.ST_CODE + d.properties.PC_CODE] + " : " + pairResultWithId[d.properties.ST_CODE + d.properties.PC_CODE])
+                 .style("left", (d3.event.pageX) + "px")
+                 .style("top", (d3.event.pageY -30) + "px");
+              })
+              .on("mouseout", function() {
+                 d3.select(this)
+                 .transition().duration(300)
+                 .style("opacity", 0.8);
+                 div.transition().duration(300)
+                 .style("opacity", 0);
+              });
+        }
+
+        //Set up for drawing html legend elements
+        var legend = d3.select('.legend-scale')
+          .append('ul')
+          .attr('class', 'legend-labels');
+
+        var keys = legend.selectAll('li')
+          .data(color_domain);
+
+        keys.enter().append('li')
+          .text(function(d, i){ return legend_labels[i];})
+          .append('span')
+          .style('background', function(d) { return color(d); })
+          ;
+
+
+        //Function called when window is resized
+        function sizeChange() {
+          d3.select("g").attr("transform", "scale(" + $("#container").width()/1000 + ")");
+          $("svg").height($("#container").width()*0.75);
+        }
 
   </script>
 </body>
