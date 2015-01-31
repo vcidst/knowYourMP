@@ -12,14 +12,19 @@
   var width = 960;
   var height = 1160;
 
-  var path = d3.geo.path();
+  var projection = d3.geo.albersUsa()
+  .translate([w/2, h/2])
+  .scale(500);
+
+  var path = d3.geo.path()
+  .projection(projection);
 
   var svg = d3.select("body").append("svg")
-              .attr("width", width)
-              .attr("height", height)
+              .attr("width", w)
+              .attr("height", h)
               .attr("fill", "blue");
 
-  d3.json("file:///F:/Code/hackathon/maps/india_pc_2014.json", function(json) {
+  d3.json("maps/us-states.json", function(json) {
     svg.selectAll("path")
         .data(json.features)
         .enter().append("path")
