@@ -24,10 +24,11 @@
               .attr("height", h)
               .attr("fill", "blue");
 
-  d3.json("maps/india_simplified.json", function(json) {
-    svg.selectAll("path")
-        .data(json.features)
-        .enter().append("path")
+  d3.json("maps/india.json", function(error, india) {
+    if (error) return console.error(error);
+
+    svg.append("path")
+        .datum(topojson.features(india))
         .attr("d", path);
   });
 
