@@ -12,8 +12,8 @@
 
         //Set d3 projection, path and svg
         var projection = d3.geo.mercator()
-            .scale(1200)
-            .translate([w/2, h/2]);
+            .center([78, 30])
+            .scale(1500);
 
         var path = d3.geo.path()
             .projection(projection);
@@ -24,10 +24,11 @@
           .attr("height",h);
 
         d3.json("maps/india.json", function(error, india) {
+          var subunits = topojson.feature(india, india.objects.india_pc_2014);
           svg.append("path")
-              .datum(topojson.feature(india, india.objects.india_pc_2014))
-              .attr("d", path)
-        })
+              .datum(subunits)
+              .attr("d", path);
+        });
 
   </script>
 </body>
