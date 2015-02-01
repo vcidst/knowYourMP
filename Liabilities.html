@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Criminal Cases Against Indian MPs</title>
+  <title>Liabilities held by Indian MPs</title>
   <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/queue.v1.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
@@ -59,7 +59,7 @@ a:hover {
 </style>
 <body>
   <h1>Visualizing Affidavits of MPs to Election Commission of India</h1>
-  <h3 style="color:grey;"><a class="active" href="#">Criminal Cases</a> | <a href="TotalAssets.html">TotalAssets</a> | <a href="Liabilities.html">Liabilities</a></h3>
+  <h3 style="color:grey;"><a href="index.html">Criminal Cases</a> | <a href="TotalAssets.html">TotalAssets</a> | <a class="active" href="#">Liabilities</a></h3>
   <p style="font-size:10px">Hover over the map to see the name of MP</p>
   <script type="text/javascript">
   var width = 960,
@@ -67,12 +67,12 @@ a:hover {
 
   // Setting color domains(intervals of values) for our map
 
-  var color_domain = [1, 2, 3, 10, 25];
-  var ext_color_domain = [0, 1, 2, 3, 10, 25];
-  var legend_labels = ["No cases, clean!", "1 case", "2 cases", "3 or more cases", "10 cases or more", "25 criminal cases!"];
+  var color_domain = [0, 50000, 1109024, 5798912, 14920284, 715462989];
+  var ext_color_domain = [0, 100000, 1109024, 5798912, 14920284, 715462989];
+  var legend_labels = ["0 or less than a lac", "<10 Lac", "More than 10 Lac", "50 Lac+", "1.4 Crore+", "70 Crores"];
   var color = d3.scale.threshold()
   .domain(color_domain)
-  .range(["#adfcad", "#ffcb40", "#ffba00", "#ff7d73", "#ff4e40", "#ff1300"]);
+  .range(["fffcb8", "#fedab2","#fed976","#feb24c","#fd8d3c","#f03b20","#bd0026"]);
 
   var div = d3.select("body").append("div")
   .attr("class", "tooltip")
@@ -103,7 +103,7 @@ a:hover {
    var nameById = {};
 
    data.forEach(function(d) {
-    rateById[d.Constituency.toLowerCase()] = +d.CriminalCase;
+    rateById[d.Constituency.toLowerCase()] = parseInt(+d.Liabilities);
     nameById[d.Constituency.toLowerCase()] = d.Candidate;
   });
 
