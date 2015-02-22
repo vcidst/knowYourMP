@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Liabilities held by Indian MPs</title>
+  <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript" src="http://d3js.org/queue.v1.min.js"></script>
+  <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
+</head>
+<style>
+
+path {
+  stroke:white;
+  stroke-width: 1px;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+.city {
+  font: 10px sans-serif;
+  font-weight: bold;
+}
+
+.legend {
+  font-size: 12px;
+}
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 150px;
+  height: 25px;
+  padding: 2px;
+  font-size: 10px;
+  background: #FFFFE0;
+  border: 1px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+h3,a {
+  font-size: 15px;
+  color: grey;
+  margin: 0;
+  padding 0;
+  text-decoration: none;
+}
+
+a:hover {
+  border-bottom: thin dotted #ff0000;
+}
+
+.active {
+  color: blue; !important
+  border-bottom: 3px dotted #ada;
+}
+
+</style>
+<body>
+  <h1>Visualizing Affidavits of MPs to Election Commission of India</h1>
+  <h3 style="color:grey;"><a href="index.html">Criminal Cases</a> | <a href="TotalAssets.html">TotalAssets</a> | <a class="active" href="#">Liabilities</a></h3>
+  <p style="font-size:10px">Hover over the map to see the name of MP</p>
+  <script type="text/javascript">
+  var width = 960,
+  height = 700;
+
+  // Setting color domains(intervals of values) for our map
+
+  var color_domain = [0, 50000, 1109024, 5798912, 14920284, 715462989];
+  var ext_color_domain = [0, 100000, 1109024, 5798912, 14920284, 715462989];
+  var legend_labels = ["0 or less than a lac", "<10 Lac", "More than 10 Lac", "50 Lac+", "1.4 Crore+", "70 Crores"];
+  var color = d3.scale.threshold()
+  .domain(color_domain)
+  .range(["fffcb8", "#fedab2","#fed976","#feb24c","#fd8d3c","#f03b20","#bd0026"]);
+
+  var div = d3.select("body").append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0);
+
+  var svg = d3.select("body").append("svg")
+  .attr("width", width)
+  .attr("height", height)
+  .style("margin", "10px auto");
+
+  var projection = d3.geo.mercator()
+  .center([80, 27.5])
+  .scale(1200);
+
+  var path = d3.geo.path().projection(projection);
+
+  //Reading map file and data
+
+  queue()
+  .defer(d3.json, "maps/india.json")
+  .defer(d3.csv, "data/affidavits.csv")
+  .await(ready);
+
+  //Start of Choropleth drawing
+
+  function ready(error, map, data) {
+   var rateById = {};
+   var nameById = {};
+
+   data.forEach(function(d) {
+    rateById[d.Constituency.toLowerCase()] = parseInt(+d.Liabilities);
+    nameById[d.Constituency.toLowerCase()] = d.Candidate;
+  });
+
+  //Drawing Choropleth
+
+  svg.append("g")
+  .attr("class", "region")
+  .selectAll("path")
+  .data(topojson.feature(map, map.objects.india_pc_2014).features) //<-- in case topojson.v1.js
+  .enter().append("path")
+  .attr("d", path)
+  .style("fill", function(d) {
+    if (d.properties.PC_NAME == null) { return "magenta"; }
+    return color(rateById[d.properties.PC_NAME.toLowerCase()]);
+  })
+  .style("opacity", 0.8)
+
+  //Adding mouseevents
+  .on("mouseover", function(d) {
+    d3.select(this).transition().duration(300).style("opacity", 1);
+    div.transition().duration(300)
+    .style("opacity", 1)
+    div.text(nameById[d.properties.PC_NAME.toLowerCase()] + " : " + rateById[d.properties.PC_NAME.toLowerCase()])
+    .style("left", (d3.event.pageX) + "px")
+    .style("top", (d3.event.pageY -30) + "px");
+  })
+  .on("mouseout", function() {
+    d3.select(this)
+    .transition().duration(300)
+    .style("opacity", 0.8);
+    div.transition().duration(300)
+    .style("opacity", 0);
+  })
+
+  }; // <-- End of Choropleth drawing
+
+  //Adding legend for our Choropleth
+
+  var legend = svg.selectAll("g.legend")
+  .data(ext_color_domain)
+  .enter().append("g")
+  .attr("class", "legend");
+
+  var ls_w = 20, ls_h = 20;
+
+  legend.append("rect")
+  .attr("x", 20)
+  .attr("y", function(d, i){ return height - (i*ls_h) - 2*ls_h;})
+  .attr("width", ls_w)
+  .attr("height", ls_h)
+  .style("fill", function(d, i) { return color(d); })
+  .style("opacity", 0.8);
+
+  legend.append("text")
+  .attr("x", 50)
+  .attr("y", function(d, i){ return height - (i*ls_h) - ls_h - 4;})
+  .text(function(d, i){ return legend_labels[i]; });
+
+  </script>
+</body>
+</html>
