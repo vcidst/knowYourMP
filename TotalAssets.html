@@ -27,18 +27,24 @@ body {
   font-size: 12px;
 }
 
-div.tooltip {
+.tooltip {
   position: absolute;
-  text-align: center;
-  width: 150px;
-  height: 25px;
-  padding: 2px;
-  font-size: 10px;
-  background: #FFFFE0;
-  border: 1px;
-  border-radius: 8px;
+  padding: 7px;
+  font-size: 0.9em;
   pointer-events: none;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -moz-box-shadow:    3px 3px 10px 0px rgba(0, 0, 0, 0.25);
+  -webkit-box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.25);
+  box-shadow:         3px 3px 10px 0px rgba(0, 0, 0, 0.25);
 }
+
+.tooltip p {
+  margin: 0;
+  padding: 0;
+}
+
 h3,a {
   font-size: 15px;
   color: grey;
@@ -58,8 +64,9 @@ a:hover {
 
 </style>
 <body>
-  <h1>Visualizing Affidavits of MPs to Election Commission of India</h1>
+  <h1>Know Your Member of Parliament</h1>
   <h3 style="color:grey;"><a href="index.html">Criminal Cases</a> | <a class="active" href="#">TotalAssets</a> | <a href="Liabilities.html">Liabilities</a></h3>
+  <p style="font-size:10px">Based on Affidavits submitted to Election Commision of India during 2014 elections</p>
   <p style="font-size:10px">Hover over the map to see the name of MP</p>
   <script type="text/javascript">
   var width = 960,
@@ -88,6 +95,7 @@ a:hover {
   .scale(1200);
 
   var path = d3.geo.path().projection(projection);
+  var formatter = d3.format(",");
 
   //Reading map file and data
 
@@ -126,7 +134,12 @@ a:hover {
     d3.select(this).transition().duration(300).style("opacity", 1);
     div.transition().duration(300)
     .style("opacity", 1)
-    div.text(nameById[d.properties.PC_NAME.toLowerCase()] + " : " + rateById[d.properties.PC_NAME.toLowerCase()])
+    div.html(
+      "<p><strong>" + d.properties.PC_NAME + "</strong></p>" +
+      "<table><tbody><tr><td class='wide'>MP in 2014:</td><td>" + nameById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
+      "<tr><td>Assets:</td><td>₹" + formatter(rateById[d.properties.PC_NAME.toLowerCase()]) + "</td></tr>" +
+      "</td></tr></tbody></table>"
+      )
     .style("left", (d3.event.pageX) + "px")
     .style("top", (d3.event.pageY -30) + "px");
   })
