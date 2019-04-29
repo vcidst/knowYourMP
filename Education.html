@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Loans held by Indian MPs</title>
+  <title>Education levels of Indian MPs</title>
   <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/queue.v1.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
@@ -65,7 +65,7 @@ a:hover {
 </style>
 <body>
   <h1>Know Your Member of Parliament</h1>
-  <h3 style="color:grey;"><a href="index.html">Criminal Cases</a> | <a href="TotalAssets.html">TotalAssets</a> | <a href="Education.html">Education</a> | <a class="active" href="#">Pending Loans</a></h3>
+  <h3 style="color:grey;"><a href="index.html">Criminal Cases</a> | <a href="TotalAssets.html">TotalAssets</a> | <a class="active" href="#">Education</a> | <a href="Liabilities.html">Pending Loans</a></h3>
   <p style="font-size:10px">Based on Affidavits submitted to Election Commision of India during 2014 elections</p>
   <p style="font-size:10px">Hover over the map to see the name of MP</p>
   <script type="text/javascript">
@@ -74,12 +74,12 @@ a:hover {
 
   // Setting color domains(intervals of values) for our map
 
-  var color_domain = [0, 50000, 1109024, 5798912, 14920284, 715462989];
-  var ext_color_domain = [0, 100000, 1109024, 5798912, 14920284, 715462989];
-  var legend_labels = ["0 or less than a lac", "<10 Lac", "More than 10 Lac", "50 Lac+", "1.4 Crore+", "70 Crores"];
+  var color_domain = [1, 10, 50, 100, 125, 150, 200];
+  var ext_color_domain = [1, 10, 50, 100, 125, 150, 200];
+  var legend_labels = ["Illiterate", "School", "Graduate", "Graduate Professional", "Post Graduate", "Doctorate", "Others"];
   var color = d3.scale.threshold()
   .domain(color_domain)
-  .range(["fffcb8", "#fedab2","#fed976","#feb24c","#fd8d3c","#f03b20","#bd0026"]);
+  .range(["#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f"]);
 
   var div = d3.select("body").append("div")
   .attr("class", "tooltip")
@@ -111,7 +111,7 @@ a:hover {
    var nameById = {};
 
    data.forEach(function(d) {
-    rateById[d.Constituency.toLowerCase()] = parseInt(+d.Liabilities);
+    rateById[d.Constituency.toLowerCase()] = d.Education;
     nameById[d.Constituency.toLowerCase()] = d.Candidate;
   });
 
@@ -125,7 +125,29 @@ a:hover {
   .attr("d", path)
   .style("fill", function(d) {
     if (d.properties.PC_NAME == null) { return "magenta"; }
-    return color(rateById[d.properties.PC_NAME.toLowerCase()]);
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "Illiterate") {
+      return color(1);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "Literate" ||
+      rateById[d.properties.PC_NAME.toLowerCase()] == "5th Pass" ||
+      rateById[d.properties.PC_NAME.toLowerCase()] == "8th Pass" ||
+      rateById[d.properties.PC_NAME.toLowerCase()] == "10th Pass" ||
+      rateById[d.properties.PC_NAME.toLowerCase()] == "12th Pass") {
+      return color(10);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "Graduate") {
+      return color(50);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "Graduate Professional") {
+      return color(100);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "Post Graduate") {
+      return color(125);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "Doctorate") {
+      return color(150);
+    }
+    else return color(200);
   })
   .style("opacity", 0.8)
 
@@ -137,7 +159,7 @@ a:hover {
     div.html(
       "<p><strong>" + d.properties.PC_NAME + "</strong></p>" +
       "<table><tbody><tr><td class='wide'>MP in 2014:</td><td>" + nameById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
-      "<tr><td>Loans:</td><td>₹" + formatter(rateById[d.properties.PC_NAME.toLowerCase()]) + "</td></tr>" +
+      "<tr><td>Education:</td><td>" + rateById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
       "</td></tr></tbody></table>"
       )
     .style("left", (d3.event.pageX) + "px")
