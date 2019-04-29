@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Education levels of Indian MPs</title>
+  <title>Sex Ratio in Indian Parliament</title>
   <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/queue.v1.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
@@ -87,7 +87,7 @@
     div.html(
       "<p><strong>" + d.properties.PC_NAME + "</strong></p>" +
       "<table><tbody><tr><td class='wide'>MP in 2014:</td><td>" + nameById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
-      "<tr><td>Education:</td><td>" + rateById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
+      "<tr><td>Sex:</td><td>" + rateById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
       "</td></tr></tbody></table>"
       )
     .style("left", (d3.event.pageX) + "px")
