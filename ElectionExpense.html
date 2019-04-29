@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Criminal Cases Against Indian MPs</title>
+  <title>Election Expenses of Indian MPs</title>
   <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/queue.v1.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
@@ -10,7 +10,7 @@
 </head>
 <body>
   <h1>Know Your Members of Parliament</h1>
-  <h3 style="color:grey;"><a href="TotalAssets.html">Assets</a> | <a class="active" href="#">Criminal Cases</a> | <a href="Education.html">Education</a> | <a href="ElectionExpense.html">Election Expenses</a> | <a href="Party.html">Party</a> | <a href="Liabilities.html">Pending Loans</a> | <a href="SexRatio.html">Sex Ratio</a></h3>
+  <h3 style="color:grey;"><a href="TotalAssets.html">Assets</a> | <a href="index.html">Criminal Cases</a> | <a href="Education.html">Education</a> | <a class="active" href="#">Election Expenses</a> | <a href="Party.html">Party</a> | <a href="Liabilities.html">Pending Loans</a> | <a href="SexRatio.html">Sex Ratio</a></h3>
   <p style="font-size:10px">Based on Affidavits submitted to Election Commision of India during 2014 elections</p>
   <p style="font-size:10px">Hover over the map to see the name of MP</p>
   <script type="text/javascript">
@@ -19,12 +19,12 @@
 
   // Setting color domains(intervals of values) for our map
 
-  var color_domain = [1, 2, 3, 10, 25];
-  var ext_color_domain = [0, 1, 2, 3, 10, 25];
-  var legend_labels = ["No cases, clean!", "1 case", "2 cases", "3 or more cases", "10 cases or more", "25 criminal cases!"];
+  var color_domain = [10000, 100000, 1000000, 2500000, 5000000, 10000000];
+  var ext_color_domain = [10000, 100000, 1000000, 2500000, 5000000, 10000000];
+  var legend_labels = ["10k+", "1L+", "10L+", "25L+", "50L+", "1Cr+"];
   var color = d3.scale.threshold()
   .domain(color_domain)
-  .range(["#adfcad", "#ffcb40", "#ffba00", "#ff7d73", "#ff4e40", "#ff1300"]);
+  .range(['#f6eff7','#d0d1e6','#a6bddb','#67a9cf','#3690c0','#02818a','#016450']);
 
   var div = d3.select("body").append("div")
   .attr("class", "tooltip")
@@ -40,6 +40,7 @@
   .scale(1200);
 
   var path = d3.geo.path().projection(projection);
+  var formatter = d3.format(",");
 
   //Reading map file and data
 
@@ -55,7 +56,7 @@
    var nameById = {};
 
    data.forEach(function(d) {
-    rateById[d.Constituency.toLowerCase()] = +d.CriminalCase;
+    rateById[d.Constituency.toLowerCase()] = +parseInt(d.ElectionExpense);
     nameById[d.Constituency.toLowerCase()] = d.Candidate;
   });
 
@@ -71,7 +72,6 @@
     if (d.properties.PC_NAME == null) { return "magenta"; }
     return color(rateById[d.properties.PC_NAME.toLowerCase()]);
   })
-  .style("opacity", 0.8)
 
   //Adding mouseevents
   .on("mouseover", function(d) {
@@ -81,7 +81,7 @@
     div.html(
       "<p><strong>" + d.properties.PC_NAME + "</strong></p>" +
       "<table><tbody><tr><td class='wide'>MP in 2014:</td><td>" + nameById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
-      "<tr><td>Criminal Cases:</td><td>" + rateById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
+      "<tr><td>Expense:</td><td>₹" + formatter(rateById[d.properties.PC_NAME.toLowerCase()]) + "</td></tr>" +
       "</td></tr></tbody></table>"
       )
     .style("left", (d3.event.pageX) + "px")
@@ -90,7 +90,7 @@
   .on("mouseout", function() {
     d3.select(this)
     .transition().duration(300)
-    .style("opacity", 0.8);
+    .style("opacity", 1);
     div.transition().duration(300)
     .style("opacity", 0);
   })

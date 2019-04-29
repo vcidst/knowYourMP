@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Education levels of Indian MPs</title>
+  <title>Political Partis of Indian MPs</title>
   <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/queue.v1.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Know Your Member of Parliament</h1>
-  <h3 style="color:grey;"><a href="TotalAssets.html">Assets</a> | <a href="index.html">Criminal Cases</a> | <a href="Education.html">Education</a> | <a class="active" href="#">Party</a> | <a href="Liabilities.html">Pending Loans</a> | <a href="SexRatio.html">Sex Ratio</a></h3>
+  <h1>Know Your Members of Parliament</h1>
+  <h3 style="color:grey;"><a href="TotalAssets.html">Assets</a> | <a href="index.html">Criminal Cases</a> | <a href="Education.html">Education</a> | <a href="ElectionExpense.html">Election Expenses</a> | <a class="active" href="#">Party</a> | <a href="Liabilities.html">Pending Loans</a> | <a href="SexRatio.html">Sex Ratio</a></h3>
   <p style="font-size:10px">Based on Affidavits submitted to Election Commision of India during 2014 elections</p>
   <p style="font-size:10px">Hover over the map to see the name of MP</p>
   <script type="text/javascript">
@@ -21,7 +21,7 @@
 
   var color_domain = [1, 10, 50, 100, 125, 150, 200, 225, 250, 275, 300, 325, 350, 375, 380, 390, 400];
   var ext_color_domain = [1, 10, 50, 100, 125, 150, 200, 225, 250, 275, 300, 325, 350, 375, 380, 390, 400];
-  var legend_labels = ["Bhartiya Janta Party", "Indian National Congress", "AIADMK", "All India Trinamool Congress", "Biju Janta Dal", "Shiv Sena", "Telugu Desam Party", "Telangana Rashtra Samiti", "Communist Party of India(Marxist)", "YSR Congress", "Lok Janshakti Party", "Nationalist Congress Party", "Samajwadi Party", "AAP", "INLD", "SAD", "Others"];
+  var legend_labels = ["Bhartiya Janta Party", "Indian National Congress", "AIADMK", "All India Trinamool Congress", "Biju Janta Dal", "Shiv Sena", "Telugu Desam Party", "Telangana Rashtra Samiti", "Communist Party of India(Marxist)", "YSR Congress", "Lok Janshakti Party", "Nationalist Congress Party", "Samajwadi Party", "Aam Aadmi Party", "Indian National Lokdal", "Shiromani Akali Dal", "Others"];
   var color = d3.scale.threshold()
   .domain(color_domain)
   .range(['#a6cee3','#ff7f00','#33a02c','#b2df8a','#fb9a99','#e31a1c','#fdbf6f','#1f78b4','#cab2d6','#6a3d9a','#ffff99','#b15928', '#00ff22', '#a21a1e', '#ababab', '#444444', '#999999', '#d3d3d3']);
@@ -138,7 +138,7 @@
   .on("mouseout", function() {
     d3.select(this)
     .transition().duration(300)
-    .style("opacity", 0.8);
+    .style("opacity", 1);
     div.transition().duration(300)
     .style("opacity", 0);
   })
