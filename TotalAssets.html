@@ -6,66 +6,11 @@
   <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/queue.v1.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
-<style>
-
-path {
-  stroke:gray;
-  stroke-width: 1px;
-}
-
-body {
-  font-family: Arial, sans-serif;
-}
-
-.city {
-  font: 10px sans-serif;
-  font-weight: bold;
-}
-
-.legend {
-  font-size: 12px;
-}
-
-.tooltip {
-  position: absolute;
-  padding: 7px;
-  font-size: 0.9em;
-  pointer-events: none;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  -moz-box-shadow:    3px 3px 10px 0px rgba(0, 0, 0, 0.25);
-  -webkit-box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.25);
-  box-shadow:         3px 3px 10px 0px rgba(0, 0, 0, 0.25);
-}
-
-.tooltip p {
-  margin: 0;
-  padding: 0;
-}
-
-h3,a {
-  font-size: 15px;
-  color: grey;
-  margin: 0;
-  padding 0;
-  text-decoration: none;
-}
-
-a:hover {
-  border-bottom: thin dotted #ff0000;
-}
-
-.active {
-  color: blue; !important
-  border-bottom: 3px dotted #ada;
-}
-
-</style>
 <body>
   <h1>Know Your Member of Parliament</h1>
-  <h3 style="color:grey;"><a href="index.html">Criminal Cases</a> | <a class="active" href="#">TotalAssets</a> | <a href="Education.html">Education</a> | <a href="Liabilities.html">Pending Loans</a></h3>
+  <h3 style="color:grey;"><a class="active" href="TotalAssets.html">Assets</a> | <a href="index.html">Criminal Cases</a> | <a href="Education.html">Education</a> | <a href="Party.html">Party</a> | <a href="Liabilities.html">Pending Loans</a></h3>
   <p style="font-size:10px">Based on Affidavits submitted to Election Commision of India during 2014 elections</p>
   <p style="font-size:10px">Hover over the map to see the name of MP</p>
   <script type="text/javascript">

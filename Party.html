@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Loans held by Indian MPs</title>
+  <title>Education levels of Indian MPs</title>
   <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/queue.v1.min.js"></script>
   <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
@@ -10,7 +10,7 @@
 </head>
 <body>
   <h1>Know Your Member of Parliament</h1>
-  <h3 style="color:grey;"><a href="TotalAssets.html">Assets</a> | <a href="index.html">Criminal Cases</a> | <a href="Education.html">Education</a> | <a href="Party.html">Party</a> | <a class="active" href="#">Pending Loans</a></h3>
+  <h3 style="color:grey;"><a href="TotalAssets.html">Assets</a> | <a href="index.html">Criminal Cases</a> | <a href="Education.html">Education</a> | <a class="active" href="#">Party</a> | <a href="Liabilities.html">Pending Loans</a></h3>
   <p style="font-size:10px">Based on Affidavits submitted to Election Commision of India during 2014 elections</p>
   <p style="font-size:10px">Hover over the map to see the name of MP</p>
   <script type="text/javascript">
@@ -19,12 +19,12 @@
 
   // Setting color domains(intervals of values) for our map
 
-  var color_domain = [0, 50000, 1109024, 5798912, 14920284, 715462989];
-  var ext_color_domain = [0, 100000, 1109024, 5798912, 14920284, 715462989];
-  var legend_labels = ["0 or less than a lac", "<10 Lac", "More than 10 Lac", "50 Lac+", "1.4 Crore+", "70 Crores"];
+  var color_domain = [1, 10, 50, 100, 125, 150, 200, 225, 250, 275, 300, 325, 350, 375, 380, 390, 400];
+  var ext_color_domain = [1, 10, 50, 100, 125, 150, 200, 225, 250, 275, 300, 325, 350, 375, 380, 390, 400];
+  var legend_labels = ["Bhartiya Janta Party", "Indian National Congress", "AIADMK", "All India Trinamool Congress", "Biju Janta Dal", "Shiv Sena", "Telugu Desam Party", "Telangana Rashtra Samiti", "Communist Party of India(Marxist)", "YSR Congress", "Lok Janshakti Party", "Nationalist Congress Party", "Samajwadi Party", "AAP", "INLD", "SAD", "Others"];
   var color = d3.scale.threshold()
   .domain(color_domain)
-  .range(["fffcb8", "#fedab2","#fed976","#feb24c","#fd8d3c","#f03b20","#bd0026"]);
+  .range(['#a6cee3','#ff7f00','#33a02c','#b2df8a','#fb9a99','#e31a1c','#fdbf6f','#1f78b4','#cab2d6','#6a3d9a','#ffff99','#b15928', '#00ff22', '#a21a1e', '#ababab', '#444444', '#999999', '#d3d3d3']);
 
   var div = d3.select("body").append("div")
   .attr("class", "tooltip")
@@ -56,7 +56,7 @@
    var nameById = {};
 
    data.forEach(function(d) {
-    rateById[d.Constituency.toLowerCase()] = parseInt(+d.Liabilities);
+    rateById[d.Constituency.toLowerCase()] = d.Party;
     nameById[d.Constituency.toLowerCase()] = d.Candidate;
   });
 
@@ -69,10 +69,57 @@
   .enter().append("path")
   .attr("d", path)
   .style("fill", function(d) {
-    if (d.properties.PC_NAME == null) { return "magenta"; }
-    return color(rateById[d.properties.PC_NAME.toLowerCase()]);
+    if (d.properties.PC_NAME == "POK") { return "black"; }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "BJP") {
+      return color(1);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "INC") {
+      return color(10);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "AIADMK") {
+      return color(50);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "AITC") {
+      return color(100);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "BJD") {
+      return color(125);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "SHS") {
+      return color(150);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "TDP") {
+      return color(200);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "T") {
+      return color(225);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "CPI(M)") {
+      return color(250);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "Yuvajana Sramika Rythu Congress Party") {
+      return color(275);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "LJP") {
+      return color(300);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "NCP") {
+      return color(325);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "SP") {
+      return color(350);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "AAP") {
+      return color(375);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "INLD") {
+      return color(380);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "SAD") {
+      return color(390);
+    }
+    else return color(400);
   })
-  .style("opacity", 0.8)
 
   //Adding mouseevents
   .on("mouseover", function(d) {
@@ -82,7 +129,7 @@
     div.html(
       "<p><strong>" + d.properties.PC_NAME + "</strong></p>" +
       "<table><tbody><tr><td class='wide'>MP in 2014:</td><td>" + nameById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
-      "<tr><td>Loans:</td><td>₹" + formatter(rateById[d.properties.PC_NAME.toLowerCase()]) + "</td></tr>" +
+      "<tr><td>Party:</td><td>" + rateById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
       "</td></tr></tbody></table>"
       )
     .style("left", (d3.event.pageX) + "px")

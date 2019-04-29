@@ -1,0 +1,53 @@
+
+path {
+  stroke:black;
+  stroke-width: 0.5px;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+.city {
+  font: 10px sans-serif;
+  font-weight: bold;
+}
+
+.legend {
+  font-size: 12px;
+}
+
+.tooltip {
+  position: absolute;
+  padding: 7px;
+  font-size: 0.9em;
+  pointer-events: none;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -moz-box-shadow:    3px 3px 10px 0px rgba(0, 0, 0, 0.25);
+  -webkit-box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.25);
+  box-shadow:         3px 3px 10px 0px rgba(0, 0, 0, 0.25);
+}
+
+.tooltip p {
+  margin: 0;
+  padding: 0;
+}
+
+h3,a {
+  font-size: 15px;
+  color: grey;
+  margin: 0;
+  padding 0;
+  text-decoration: none;
+}
+
+a:hover {
+  border-bottom: thin dotted #ff0000;
+}
+
+.active {
+  color: blue; !important
+  border-bottom: 3px dotted #ada;
+}
