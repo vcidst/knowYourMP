@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Political Partis of Indian MPs</title>
+  <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript" src="http://d3js.org/queue.v1.min.js"></script>
+  <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Know Your Members of Parliament</h1>
+  <h3 style="color:grey;"><a href="TotalAssets.html">Assets</a> | <a href="index.html">Criminal Cases</a> | <a href="Education.html">Education</a> | <a href="ElectionExpense.html">Election Expenses</a> | <a class="active" href="#">Party</a> | <a href="Liabilities.html">Pending Loans</a> | <a href="SexRatio.html">Sex Ratio</a></h3>
+  <p style="font-size:10px">Based on Affidavits submitted to Election Commision of India during 2014 elections</p>
+  <p style="font-size:10px">Hover over the map to see the name of MP</p>
+  <script type="text/javascript">
+  var width = 960,
+  height = 700;
+
+  // Setting color domains(intervals of values) for our map
+
+  var color_domain = [1, 10, 50, 100, 125, 150, 200, 225, 250, 275, 300, 325, 350, 375, 380, 390, 400];
+  var ext_color_domain = [1, 10, 50, 100, 125, 150, 200, 225, 250, 275, 300, 325, 350, 375, 380, 390, 400];
+  var legend_labels = ["Bhartiya Janta Party", "Indian National Congress", "AIADMK", "All India Trinamool Congress", "Biju Janta Dal", "Shiv Sena", "Telugu Desam Party", "Telangana Rashtra Samiti", "Communist Party of India(Marxist)", "YSR Congress", "Lok Janshakti Party", "Nationalist Congress Party", "Samajwadi Party", "Aam Aadmi Party", "Indian National Lokdal", "Shiromani Akali Dal", "Others"];
+  var color = d3.scale.threshold()
+  .domain(color_domain)
+  .range(['#a6cee3','#ff7f00','#33a02c','#b2df8a','#fb9a99','#e31a1c','#fdbf6f','#1f78b4','#cab2d6','#6a3d9a','#ffff99','#b15928', '#00ff22', '#a21a1e', '#ababab', '#444444', '#999999', '#d3d3d3']);
+
+  var div = d3.select("body").append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0);
+
+  var svg = d3.select("body").append("svg")
+  .attr("width", width)
+  .attr("height", height)
+  .style("margin", "10px auto");
+
+  var projection = d3.geo.mercator()
+  .center([80, 27.5])
+  .scale(1200);
+
+  var path = d3.geo.path().projection(projection);
+  var formatter = d3.format(",");
+
+  //Reading map file and data
+
+  queue()
+  .defer(d3.json, "maps/india.json")
+  .defer(d3.csv, "data/lokdhaba.csv")
+  .await(ready);
+
+  //Start of Choropleth drawing
+  function ready(error, map, data) {
+   var rateById = {};
+   var nameById = {};
+
+   data.forEach(function(d) {
+    rateById[d.Constituency_Name.toLowerCase()] = d.Party;
+    nameById[d.Constituency_Name.toLowerCase()] = d.Candidate;
+  });
+
+  //Drawing Choropleth
+
+  svg.append("g")
+  .attr("class", "region")
+  .selectAll("path")
+  .data(topojson.feature(map, map.objects.india_pc_2014).features) //<-- in case topojson.v1.js
+  .enter().append("path")
+  .attr("d", path)
+  .style("fill", function(d) {
+    if (d.properties.PC_NAME == "POK") { return "black"; }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "BJP") {
+      return color(1);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "INC") {
+      return color(10);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "AIADMK") {
+      return color(50);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "AITC") {
+      return color(100);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "BJD") {
+      return color(125);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "SHS") {
+      return color(150);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "TDP") {
+      return color(200);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "T") {
+      return color(225);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "CPI(M)") {
+      return color(250);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "Yuvajana Sramika Rythu Congress Party") {
+      return color(275);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "LJP") {
+      return color(300);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "NCP") {
+      return color(325);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "SP") {
+      return color(350);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "AAP") {
+      return color(375);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "INLD") {
+      return color(380);
+    }
+    else if (rateById[d.properties.PC_NAME.toLowerCase()] == "SAD") {
+      return color(390);
+    }
+    else return color(400);
+  })
+
+  //Adding mouseevents
+  .on("mouseover", function(d) {
+    d3.select(this).transition().duration(300).style("opacity", 1);
+    div.transition().duration(300)
+    .style("opacity", 1)
+    div.html(
+      "<p><strong>" + d.properties.PC_NAME + "</strong></p>" +
+      "<table><tbody><tr><td class='wide'>MP in 2014:</td><td>" + nameById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
+      "<tr><td>Party:</td><td>" + rateById[d.properties.PC_NAME.toLowerCase()] + "</td></tr>" +
+      "</td></tr></tbody></table>"
+      )
+    .style("left", (d3.event.pageX) + "px")
+    .style("top", (d3.event.pageY -30) + "px");
+  })
+  .on("mouseout", function() {
+    d3.select(this)
+    .transition().duration(300)
+    .style("opacity", 1);
+    div.transition().duration(300)
+    .style("opacity", 0);
+  })
+
+  }; // <-- End of Choropleth drawing
+
+  //Adding legend for our Choropleth
+
+  var legend = svg.selectAll("g.legend")
+  .data(ext_color_domain)
+  .enter().append("g")
+  .attr("class", "legend");
+
+  var ls_w = 20, ls_h = 20;
+
+  legend.append("rect")
+  .attr("x", 20)
+  .attr("y", function(d, i){ return height - (i*ls_h) - 2*ls_h;})
+  .attr("width", ls_w)
+  .attr("height", ls_h)
+  .style("fill", function(d, i) { return color(d); })
+  .style("opacity", 0.8);
+
+  legend.append("text")
+  .attr("x", 50)
+  .attr("y", function(d, i){ return height - (i*ls_h) - ls_h - 4;})
+  .text(function(d, i){ return legend_labels[i]; });
+
+  </script>
+</body>
+</html>
