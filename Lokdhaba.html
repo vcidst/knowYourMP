@@ -55,8 +55,10 @@
    var nameById = {};
 
    data.forEach(function(d) {
-    rateById[d.Constituency_Name.toLowerCase()] = d.Party;
-    nameById[d.Constituency_Name.toLowerCase()] = d.Candidate;
+    if(d.Year == "2014") {
+      rateById[d.Constituency_Name.toLowerCase()] = d.Party;
+      nameById[d.Constituency_Name.toLowerCase()] = d.Candidate;  
+    }
   });
 
   //Drawing Choropleth
